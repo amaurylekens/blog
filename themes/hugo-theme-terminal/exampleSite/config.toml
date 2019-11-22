@@ -1,26 +1,19 @@
-baseurl = "/"
-languageCode = "en-uk"
+baseurl = "https://example.com/"
+languageCode = "en-us"
 theme = "hugo-theme-terminal"
 paginate = 5
 
 [params]
   contentTypeName = "post"
-  themeColor = "green"
+  themeColor = "orange"
   showMenuItems = 2
   fullWidthTheme = false
   centerTheme = false
-  description = "A website built through Hugo and blogdown."
-  highlightjsVersion = "9.11.0"
-  highlightjsCDN = "//cdn.bootcss.com"
-  highlightjsLang = ["r", "yaml"]
-  highlightjsTheme = "a11ydark"
-  MathJaxCDN = "//cdn.bootcss.com"
-  MathJaxVersion = "2.7.1"
-  
+
 [languages]
   [languages.en]
-    title = "Amaury Lekens"
-    subtitle = "Personal website"
+    title = "Terminal"
+    subtitle = "A simple, retro theme for Hugo"
     keywords = ""
     copyright = ""
     menuMore = "Show more"
@@ -28,7 +21,7 @@ paginate = 5
     readOtherPosts = "Read other posts"
 
     [languages.en.params.logo]
-      logoText = "Amaury Lekens"
+      logoText = "Terminal"
       logoHomeLink = "/"
 
     [languages.en.menu]
@@ -38,5 +31,5 @@ paginate = 5
         url = "/about"
       [[languages.en.menu.main]]
         identifier = "showcase"
-        name = "Projects"
-        url = "/projects"
+        name = "Showcase"
+        url = "/showcase"
