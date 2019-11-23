@@ -28,24 +28,30 @@ w_1 \\
 w_2
 \end{bmatrix}
 \qquad\qquad
-v + w = \begin{bmatrix}
+u = v + w = \begin{bmatrix}
 v_1 + w_1 \\
 v_2 + w_2
 \end{bmatrix}\]</span></p>
-<pre class="r"><code>v &lt;- c(1,5)
-w &lt;- c(2,2)
+<pre class="r"><code>library(ggplot2)
+v &lt;- c(1,-2)
+w &lt;- c(-32,2)
 u &lt;- v+w
 
-x_max = ceiling((v[1]+w[1])*1.2)
-y_max = ceiling((v[2]+w[2])*1.2)
+arrow = arrow(angle = 10, type = &quot;closed&quot;, length = unit(0.10, &quot;inches&quot;), ends = &quot;last&quot;)
+cols &lt;- c(&quot;vector v&quot;=&quot;green&quot;, &quot;vector w&quot;=&quot;red&quot;, &quot;vector u&quot;=&quot;blue&quot; )
+data = data.frame(rbind(c(0,0),v,v,(v+w),c(0,0),u))
 
-plot(0,0, xlim=c(0,x_max), ylim=c(0,y_max))
-arrows(0,0,v[1],v[2], col=&quot;red&quot;)
-arrows(v[1],v[2],v[1]+w[1],v[2]+w[2], col=&quot;green&quot;)
-arrows(0,0,u[1],u[2], col=&quot;blue&quot;)
-
-legend(0, y_max, legend=c(&quot;vector v&quot;, &quot;vector w&quot;, &quot;vector (v+w)&quot;),
-       col=c(&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;), lty=c(1,1,1))</code></pre>
+ggplot(data=NULL) +
+  geom_segment(data=data[1:2,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color=&quot;vector v&quot;), arrow = arrow) +
+  geom_segment(data=data[3:4,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color=&quot;vector w&quot;), arrow = arrow) +
+  geom_segment(data=data[5:6,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color=&quot;vector u&quot;), arrow = arrow) +
+  scale_colour_manual(name=&quot;Legend&quot;,values=cols) +
+  ggtitle(&quot;Sum of vectors&quot;) +
+  xlab(&quot;x&quot;) + 
+  ylab(&quot;y&quot;) +
+  theme(plot.title = element_text(hjust=0.5, face=&quot;bold&quot;, size=&quot;15&quot;),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 15))</code></pre>
 <p><img src="/post/2019-11-22-linear-algebra-basics_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="scalar-multiplication" class="section level4">
@@ -58,15 +64,19 @@ a.v_2
 a &lt;- 2
 w &lt;- a*v
 
-x_max &lt;- ceiling(w[1]*1.2)
-y_max &lt;- ceiling(w[2]*1.2)
+cols &lt;- c(&quot;vector v&quot;=&quot;green&quot;, &quot;vector w&quot;=&quot;blue&quot;)
+data = data.frame(rbind(c(0,0), w, c(0,0), v))
 
-plot(0,0, xlim=c(0,x_max), ylim=c(0,y_max))
-arrows(0,0,w[1],w[2], col=&quot;green&quot;)
-arrows(0,0,v[1],v[2], col=&quot;red&quot;)
-
-legend(0, y_max, legend=c(&quot;vector v&quot;, &quot;vector a*v&quot;),
-       col=c(&quot;red&quot;, &quot;green&quot;), lty=c(1,1,1))</code></pre>
+ggplot(data=NULL) +
+  geom_segment(data=data[1:2,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color=&quot;vector v&quot;), arrow = arrow) +
+  geom_segment(data=data[3:4,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color=&quot;vector w&quot;), arrow = arrow) +
+  scale_colour_manual(name=&quot;Legend&quot;,values=cols) +
+  ggtitle(&quot;Multiplication by a scalar&quot;) +
+  xlab(&quot;x&quot;) + 
+  ylab(&quot;y&quot;) +
+  theme(plot.title = element_text(hjust=0.5, face=&quot;bold&quot;, size=&quot;15&quot;),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 15))</code></pre>
 <p><img src="/post/2019-11-22-linear-algebra-basics_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p><span class="math inline">\(a.v + b.w\)</span> is a linear combination of v and w d w</p>
 </div>
@@ -179,12 +189,14 @@ b = c(3,-10)
 
 if(det(A)!=0){
     x = solve(A,b)
-    plot(x[1],x[2], xlim=c(min(x[1],0)*1.5,max(x[1],0)*1.5), ylim=c(min(x[2],0)*1.5,max(x[2],0)*1.5))
-} else{
-    plot(0,0, xlim=c(-5,5), ylim=c(-5,5), type=&quot;n&quot;)
-}
-abline(b=-(A[1,1]/A[1,2]), a=b[1]/A[1,2])
-abline(b=-(A[2,1]/A[2,2]), a=b[2]/A[2,2])</code></pre>
+} 
+
+ggplot(data=data.frame(rbind(v,w))) +
+  scale_x_continuous(name=&quot;x&quot;, limits=c(min(x[1],0)*1.5,max(x[1],0)*1.5)) +
+  scale_y_continuous(name=&quot;y&quot;, limits=c(min(x[2],0)*1.5,max(x[2],0)*1.5)) +
+  geom_abline(slope=-(A[1,1]/A[1,2]), intercept=b[1]/A[1,2]) +
+  geom_abline(slope=-(A[2,1]/A[2,2]), intercept=b[2]/A[2,2]) +
+  geom_point(aes(x=x[1], y=x[2]))</code></pre>
 <p><img src="/post/2019-11-22-linear-algebra-basics_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <ul>
 <li>The solution is the meeting point of the lines described by the equations</li>
@@ -214,30 +226,33 @@ a_2 &lt;- c(A[1,2],A[2,2])
 if(det(A) != 0){
     a_1_comb &lt;- a_1*x[1]
     a_2_comb &lt;- a_2*x[2]
-    x_max &lt;- ceiling(max(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1], (a_1_comb + a_2_comb)[1])*1.2)
-    x_min &lt;- ceiling((min(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1],(a_1_comb + a_2_comb)[1])-1)*1.2)
-    y_max &lt;- ceiling(max(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2], (a_1_comb + a_2_comb)[2])*1.2)
-    y_min &lt;- ceiling((min(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2], (a_1_comb + a_2_comb)[2])-1)*1.2)
-} else {
-    x_max &lt;- ceiling(max(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1])*1.2)
-    x_min &lt;- ceiling((min(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1])-1)*1.2)
-    y_max &lt;- ceiling(max(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2])*1.2)
-    y_min &lt;- ceiling((min(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2])-1)*1.2) 
+    u = a_1_comb + a_2_comb
 }
 
+cols &lt;- c(&quot;original vector&quot;=&quot;red&quot;, &quot;multiplied vector&quot;=&quot;green&quot;, &quot;result&quot;=&quot;blue&quot;)
+data = data.frame(rbind(c(0,0), a_1, c(0,0), a_2, c(0,0), a_1_comb, c(0,0), 
+                        a_2_comb, a_1_comb, (a_1_comb+a_2_comb), c(0,0), u))
 
-plot(0,0, xlim=c(x_min,x_max), ylim=c(y_min,y_max))
-arrows(0,0,a_1[1],a_1[2], col=&quot;red&quot;)
-arrows(0,0,a_2[1],a_2[2], col=&quot;red&quot;)
-
-if(det(A) != 0){
-    arrows(0,0,a_1_comb[1],a_1_comb[2], col=&quot;green&quot;)
-    arrows(0,0,a_2_comb[1],a_2_comb[2], col=&quot;green&quot;)
-    arrows(a_1_comb[1],a_1_comb[2],(a_1_comb+a_2_comb)[1],(a_1_comb+a_2_comb)[2], col=&quot;green&quot;, lty=&quot;dashed&quot;)
-}
-arrows(0,0, b[1], b[2], col=&quot;blue&quot;)
-legend(x_min, y_max, legend=c(&quot;Original vector&quot;, &quot;Multiplied vector&quot;, &quot;Result&quot;),
-       col=c(&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;), lty=c(1,1,1))</code></pre>
+ggplot(data=NULL) +
+  geom_segment(data=data[1:2,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color=&quot;original vector&quot;), arrow = arrow) +
+  geom_segment(data=data[3:4,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color=&quot;original vector&quot;), arrow = arrow) +
+  geom_segment(data=data[5:6,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2], 
+                                    color=&quot;multiplied vector&quot;), arrow = arrow) +
+  geom_segment(data=data[7:8,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color=&quot;multiplied vector&quot;), arrow = arrow) +
+  geom_segment(data=data[9:10,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                     color=&quot;multiplied vector&quot;), arrow = arrow, lty=&quot;dashed&quot;) +
+  geom_segment(data=data[11:12,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color=&quot;result&quot;), arrow = arrow) +
+  scale_colour_manual(name=&quot;Legend&quot;,values=cols) +
+  ggtitle(&quot;Multiplication by a scalar&quot;) +
+  xlab(&quot;x&quot;) + 
+  ylab(&quot;y&quot;) +
+  theme(plot.title = element_text(hjust=0.5, face=&quot;bold&quot;, size=&quot;15&quot;),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 15))</code></pre>
 <p><img src="/post/2019-11-22-linear-algebra-basics_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <ul>
 <li>The solution is the vector of coefficient of the linear combination of the columns that gives the vector b</li>
@@ -265,15 +280,8 @@ legend(x_min, y_max, legend=c(&quot;Original vector&quot;, &quot;Multiplied vect
 <p><strong>Pivot</strong> : first non-zero in the rows that does the elimination</p>
 <p><strong>Multiplier</strong> : (entry to eliminate) divided by (pivot)</p>
 <pre class="r"><code>library(matrixcalc)
-library(cowplot)</code></pre>
-<pre><code>## 
-## ********************************************************</code></pre>
-<pre><code>## Note: As of version 1.0.0, cowplot does not change the</code></pre>
-<pre><code>##   default ggplot2 theme anymore. To recover the previous</code></pre>
-<pre><code>##   behavior, execute:
-##   theme_set(theme_cowplot())</code></pre>
-<pre><code>## ********************************************************</code></pre>
-<pre class="r"><code>#adapts the size of the plot
+
+#adapts the size of the plot
 options(repr.plot.width=16, repr.plot.height=6)
 
 A = cbind(c(1,2), c(3,4))
@@ -287,15 +295,29 @@ L = lu.decomposition(A)$L
 c = solve(L,b)
 x = solve(U,c)
 
-par(mfrow=c(1,2))
+x_lim = c(min(x[1],0)-1,max(x[1],0)+1)
+y_lim = c(min(x[2],0)-1,max(x[2],0)+1)
 
-plot(x[1],x[2], xlim=c(min(x[1],0)*1.5,max(x[1],0)*1.5), ylim=c(min(x[2],0)*1.5,max(x[2],0)*1.5))
-abline(b=-(A[1,1]/A[1,2]), a=b[1]/A[1,2])
-abline(b=-(A[2,1]/A[2,2]), a=b[2]/A[2,2])
+p1 &lt;- ggplot(data=data.frame(rbind(v,w))) +
+  scale_x_continuous(name=&quot;x&quot;, limits=x_lim) +
+  scale_y_continuous(name=&quot;y&quot;, limits=y_lim) +
+  geom_abline(slope=-(A[1,1]/A[1,2]), intercept=b[1]/A[1,2]) +
+  geom_abline(slope=-(A[2,1]/A[2,2]), intercept=b[2]/A[2,2]) +
+  geom_point(aes(x=x[1], y=x[2])) +
+  ggtitle(&quot;Before elimination&quot;) +
+  theme(plot.title = element_text(hjust=0.5, face=&quot;bold&quot;, size=&quot;15&quot;))
 
-plot(x[1],x[2], xlim=c(min(x[1],0)*1.5,max(x[1],0)*1.5), ylim=c(min(x[2],0)*1.5,max(x[2],0)*1.5))
-abline(b=-(U[1,1]/U[1,2]), a=c[1]/U[1,2])
-abline(b=-(U[2,1]/U[2,2]), a=c[2]/U[2,2])</code></pre>
-<p><img src="/post/2019-11-22-linear-algebra-basics_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+p2 &lt;- ggplot(data=data.frame(rbind(v,w))) +
+  scale_x_continuous(name=&quot;x&quot;, limits=x_lim) +
+  scale_y_continuous(name=&quot;y&quot;, limits=y_lim) +
+  geom_abline(slope=-(U[1,1]/U[1,2]), intercept=c[1]/U[1,2]) +
+  geom_abline(slope=-(U[2,1]/U[2,2]), intercept=c[2]/U[2,2]) +
+  geom_point(aes(x=x[1], y=x[2])) +
+  ggtitle(&quot;After elimination&quot;) +
+  theme(plot.title = element_text(hjust=0.5, face=&quot;bold&quot;, size=&quot;15&quot;))
+
+cowplot::plot_grid(p1, p2, labels = c(&quot;&quot;,&quot;&quot;))</code></pre>
+<p><img src="/post/2019-11-22-linear-algebra-basics_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+```</p>
 </div>
 </div>
