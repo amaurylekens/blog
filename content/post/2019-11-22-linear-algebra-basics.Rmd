@@ -31,27 +31,33 @@ w_1 \\
 w_2
 \end{bmatrix}
 \qquad\qquad
-v + w = \begin{bmatrix}
+u = v + w = \begin{bmatrix}
 v_1 + w_1 \\
 v_2 + w_2
 \end{bmatrix}$$
 
 
 ```{r}
-v <- c(1,5)
-w <- c(2,2)
+library(ggplot2)
+v <- c(1,-2)
+w <- c(-32,2)
 u <- v+w
 
-x_max = ceiling((v[1]+w[1])*1.2)
-y_max = ceiling((v[2]+w[2])*1.2)
+arrow = arrow(angle = 10, type = "closed", length = unit(0.10, "inches"), ends = "last")
+cols <- c("vector v"="green", "vector w"="red", "vector u"="blue" )
+data = data.frame(rbind(c(0,0),v,v,(v+w),c(0,0),u))
 
-plot(0,0, xlim=c(0,x_max), ylim=c(0,y_max))
-arrows(0,0,v[1],v[2], col="red")
-arrows(v[1],v[2],v[1]+w[1],v[2]+w[2], col="green")
-arrows(0,0,u[1],u[2], col="blue")
-
-legend(0, y_max, legend=c("vector v", "vector w", "vector (v+w)"),
-       col=c("red", "green", "blue"), lty=c(1,1,1))
+ggplot(data=NULL) +
+  geom_segment(data=data[1:2,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color="vector v"), arrow = arrow) +
+  geom_segment(data=data[3:4,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color="vector w"), arrow = arrow) +
+  geom_segment(data=data[5:6,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color="vector u"), arrow = arrow) +
+  scale_colour_manual(name="Legend",values=cols) +
+  ggtitle("Sum of vectors") +
+  xlab("x") + 
+  ylab("y") +
+  theme(plot.title = element_text(hjust=0.5, face="bold", size="15"),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 15))
 ```
 
 #### Scalar multiplication
@@ -66,15 +72,19 @@ v <- c(6,5)
 a <- 2
 w <- a*v
 
-x_max <- ceiling(w[1]*1.2)
-y_max <- ceiling(w[2]*1.2)
+cols <- c("vector v"="green", "vector w"="blue")
+data = data.frame(rbind(c(0,0), w, c(0,0), v))
 
-plot(0,0, xlim=c(0,x_max), ylim=c(0,y_max))
-arrows(0,0,w[1],w[2], col="green")
-arrows(0,0,v[1],v[2], col="red")
-
-legend(0, y_max, legend=c("vector v", "vector a*v"),
-       col=c("red", "green"), lty=c(1,1,1))
+ggplot(data=NULL) +
+  geom_segment(data=data[1:2,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color="vector v"), arrow = arrow) +
+  geom_segment(data=data[3:4,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],color="vector w"), arrow = arrow) +
+  scale_colour_manual(name="Legend",values=cols) +
+  ggtitle("Multiplication by a scalar") +
+  xlab("x") + 
+  ylab("y") +
+  theme(plot.title = element_text(hjust=0.5, face="bold", size="15"),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 15))
 ```
 
 $a.v + b.w$ is a linear combination of v and w d w
@@ -201,12 +211,14 @@ b = c(3,-10)
 
 if(det(A)!=0){
     x = solve(A,b)
-    plot(x[1],x[2], xlim=c(min(x[1],0)*1.5,max(x[1],0)*1.5), ylim=c(min(x[2],0)*1.5,max(x[2],0)*1.5))
-} else{
-    plot(0,0, xlim=c(-5,5), ylim=c(-5,5), type="n")
-}
-abline(b=-(A[1,1]/A[1,2]), a=b[1]/A[1,2])
-abline(b=-(A[2,1]/A[2,2]), a=b[2]/A[2,2])
+} 
+
+ggplot(data=data.frame(rbind(v,w))) +
+  scale_x_continuous(name="x", limits=c(min(x[1],0)*1.5,max(x[1],0)*1.5)) +
+  scale_y_continuous(name="y", limits=c(min(x[2],0)*1.5,max(x[2],0)*1.5)) +
+  geom_abline(slope=-(A[1,1]/A[1,2]), intercept=b[1]/A[1,2]) +
+  geom_abline(slope=-(A[2,1]/A[2,2]), intercept=b[2]/A[2,2]) +
+  geom_point(aes(x=x[1], y=x[2]))
 ```
 
 * The solution is the meeting point of the lines described by the equations
@@ -241,30 +253,35 @@ a_2 <- c(A[1,2],A[2,2])
 if(det(A) != 0){
     a_1_comb <- a_1*x[1]
     a_2_comb <- a_2*x[2]
-    x_max <- ceiling(max(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1], (a_1_comb + a_2_comb)[1])*1.2)
-    x_min <- ceiling((min(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1],(a_1_comb + a_2_comb)[1])-1)*1.2)
-    y_max <- ceiling(max(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2], (a_1_comb + a_2_comb)[2])*1.2)
-    y_min <- ceiling((min(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2], (a_1_comb + a_2_comb)[2])-1)*1.2)
-} else {
-    x_max <- ceiling(max(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1])*1.2)
-    x_min <- ceiling((min(0, a_1[1], a_2[1], a_1_comb[1], a_2_comb[1])-1)*1.2)
-    y_max <- ceiling(max(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2])*1.2)
-    y_min <- ceiling((min(0, a_1[2], a_2[2], a_1_comb[2], a_2_comb[2])-1)*1.2) 
+    u = a_1_comb + a_2_comb
 }
 
+cols <- c("original vector"="red", "multiplied vector"="green", "result"="blue")
+data = data.frame(rbind(c(0,0), a_1, c(0,0), a_2, c(0,0), a_1_comb, c(0,0), 
+                        a_2_comb, a_1_comb, (a_1_comb+a_2_comb), c(0,0), u))
 
-plot(0,0, xlim=c(x_min,x_max), ylim=c(y_min,y_max))
-arrows(0,0,a_1[1],a_1[2], col="red")
-arrows(0,0,a_2[1],a_2[2], col="red")
+ggplot(data=NULL) +
+  geom_segment(data=data[1:2,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color="original vector"), arrow = arrow) +
+  geom_segment(data=data[3:4,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color="original vector"), arrow = arrow) +
+  geom_segment(data=data[5:6,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2], 
+                                    color="multiplied vector"), arrow = arrow) +
+  geom_segment(data=data[7:8,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color="multiplied vector"), arrow = arrow) +
+  geom_segment(data=data[9:10,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                     color="multiplied vector"), arrow = arrow, lty="dashed") +
+  geom_segment(data=data[11:12,], aes(x=X1[1], y=X2[1], xend=X1[2], yend=X2[2],
+                                    color="result"), arrow = arrow) +
+  scale_colour_manual(name="Legend",values=cols) +
+  ggtitle("Multiplication by a scalar") +
+  xlab("x") + 
+  ylab("y") +
+  theme(plot.title = element_text(hjust=0.5, face="bold", size="15"),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 15))
 
-if(det(A) != 0){
-    arrows(0,0,a_1_comb[1],a_1_comb[2], col="green")
-    arrows(0,0,a_2_comb[1],a_2_comb[2], col="green")
-    arrows(a_1_comb[1],a_1_comb[2],(a_1_comb+a_2_comb)[1],(a_1_comb+a_2_comb)[2], col="green", lty="dashed")
-}
-arrows(0,0, b[1], b[2], col="blue")
-legend(x_min, y_max, legend=c("Original vector", "Multiplied vector", "Result"),
-       col=c("red", "green", "blue"), lty=c(1,1,1))
+
 ```
 
 * The solution is the vector of coefficient of the linear combination of the columns that gives the vector b
@@ -298,7 +315,6 @@ We multiply equation 1 to substract from equation 2 and eliminate a component. T
 
 ```{r}
 library(matrixcalc)
-library(cowplot)
 
 #adapts the size of the plot
 options(repr.plot.width=16, repr.plot.height=6)
@@ -314,15 +330,29 @@ L = lu.decomposition(A)$L
 c = solve(L,b)
 x = solve(U,c)
 
-par(mfrow=c(1,2))
+x_lim = c(min(x[1],0)-1,max(x[1],0)+1)
+y_lim = c(min(x[2],0)-1,max(x[2],0)+1)
 
-plot(x[1],x[2], xlim=c(min(x[1],0)*1.5,max(x[1],0)*1.5), ylim=c(min(x[2],0)*1.5,max(x[2],0)*1.5))
-abline(b=-(A[1,1]/A[1,2]), a=b[1]/A[1,2])
-abline(b=-(A[2,1]/A[2,2]), a=b[2]/A[2,2])
+p1 <- ggplot(data=data.frame(rbind(v,w))) +
+  scale_x_continuous(name="x", limits=x_lim) +
+  scale_y_continuous(name="y", limits=y_lim) +
+  geom_abline(slope=-(A[1,1]/A[1,2]), intercept=b[1]/A[1,2]) +
+  geom_abline(slope=-(A[2,1]/A[2,2]), intercept=b[2]/A[2,2]) +
+  geom_point(aes(x=x[1], y=x[2])) +
+  ggtitle("Before elimination") +
+  theme(plot.title = element_text(hjust=0.5, face="bold", size="15"))
 
-plot(x[1],x[2], xlim=c(min(x[1],0)*1.5,max(x[1],0)*1.5), ylim=c(min(x[2],0)*1.5,max(x[2],0)*1.5))
-abline(b=-(U[1,1]/U[1,2]), a=c[1]/U[1,2])
-abline(b=-(U[2,1]/U[2,2]), a=c[2]/U[2,2])
+p2 <- ggplot(data=data.frame(rbind(v,w))) +
+  scale_x_continuous(name="x", limits=x_lim) +
+  scale_y_continuous(name="y", limits=y_lim) +
+  geom_abline(slope=-(U[1,1]/U[1,2]), intercept=c[1]/U[1,2]) +
+  geom_abline(slope=-(U[2,1]/U[2,2]), intercept=c[2]/U[2,2]) +
+  geom_point(aes(x=x[1], y=x[2])) +
+  ggtitle("After elimination") +
+  theme(plot.title = element_text(hjust=0.5, face="bold", size="15"))
+
+cowplot::plot_grid(p1, p2, labels = c("",""))
+```
 ```
 
 
